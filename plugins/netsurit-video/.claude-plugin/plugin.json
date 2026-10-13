@@ -1,0 +1,11 @@
+{
+  "name": "netsurit-video",
+  "displayName": "Netsurit Video",
+  "description": "Make Netsurit-branded animated explainer videos in the style proven on The Enterprise Brain: flat infographic illustration in the Netsurit CI, ElevenLabs narration timed to the words, optional Eleven Music, shape-morph chapters and the Netsurit end card, rendered for WhatsApp (9:16) and 16:9 with measured review checks. Includes prerequisite checks and setup guidance. By Louis de Klerk.",
+  "version": "1.0.0",
+  "author": { "name": "Louis de Klerk", "url": "https://github.com/LouisDK" },
+  "homepage": "https://github.com/LouisDK/netsurit-video",
+  "repository": "https://github.com/LouisDK/netsurit-video",
+  "license": "SEE LICENSE IN NOTICE.md",
+  "keywords": ["netsurit", "video", "explainer", "animation", "whatsapp", "elevenlabs", "brand"]
+}

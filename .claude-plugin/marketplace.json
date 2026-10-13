@@ -1,0 +1,15 @@
+{
+  "name": "netsurit",
+  "owner": {
+    "name": "Louis de Klerk",
+    "url": "https://github.com/LouisDK"
+  },
+  "description": "Louis de Klerk's Claude Code plugins for Netsurit.",
+  "plugins": [
+    {
+      "name": "netsurit-video",
+      "source": "./plugins/netsurit-video",
+      "description": "Netsurit-branded animated explainer videos (WhatsApp 9:16 and 16:9), narrated, timed to the words, checked before delivery."
+    }
+  ]
+}

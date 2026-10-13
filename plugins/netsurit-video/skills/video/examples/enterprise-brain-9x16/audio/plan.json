@@ -1,0 +1,174 @@
+{
+ "model_id": "music_v2_5",
+ "with_timestamps": false,
+ "seed": 8231,
+ "composition_plan": {
+  "chunks": [
+   {
+    "text": "[Intro]\n[Instrumental]",
+    "duration_ms": 20250,
+    "positive_styles": [
+     "cinematic corporate underscore",
+     "instrumental",
+     "120 bpm",
+     "D minor",
+     "soft felt piano",
+     "sparse plucked arpeggio",
+     "warm analog pad",
+     "curious, unresolved",
+     "leaves space for narration"
+    ],
+    "negative_styles": [
+     "vocals",
+     "singing",
+     "choir",
+     "heavy drums",
+     "busy melody"
+    ]
+   },
+   {
+    "text": "[Verse 1]\n[Instrumental]",
+    "duration_ms": 34250,
+    "positive_styles": [
+     "same motif, a touch fuller",
+     "120 bpm",
+     "D minor",
+     "plucked eighth-note arpeggio",
+     "soft pulse",
+     "light percussion",
+     "understated"
+    ],
+    "negative_styles": [
+     "vocals",
+     "singing",
+     "lead melody"
+    ]
+   },
+   {
+    "text": "[Verse 2]\n[Instrumental]",
+    "duration_ms": 20500,
+    "positive_styles": [
+     "same motif",
+     "120 bpm",
+     "D minor",
+     "ticking clock-like hi-hat",
+     "muted synth bass",
+     "mechanical, precise"
+    ],
+    "negative_styles": [
+     "vocals",
+     "singing"
+    ]
+   },
+   {
+    "text": "[Breakdown]\n[Instrumental]",
+    "duration_ms": 6200,
+    "positive_styles": [
+     "sparse",
+     "120 bpm",
+     "D minor",
+     "sustained pad only",
+     "suspended, tense, holding breath",
+     "quiet"
+    ],
+    "negative_styles": [
+     "vocals",
+     "drums",
+     "build-up"
+    ]
+   },
+   {
+    "text": "[Drop]\n[Instrumental]\n{full band enters immediately on the very first beat}",
+    "duration_ms": 13550,
+    "positive_styles": [
+     "immediate full arrival on beat one",
+     "120 bpm",
+     "D major",
+     "loud chord stab and deep sub bass hit at 0:00",
+     "bright piano and strings",
+     "uplifting, open",
+     "full energy from the first second"
+    ],
+    "negative_styles": [
+     "vocals",
+     "singing",
+     "minor key",
+     "fade in",
+     "slow build",
+     "intro"
+    ]
+   },
+   {
+    "text": "[Verse 3]\n[Instrumental]",
+    "duration_ms": 22000,
+    "positive_styles": [
+     "warm and confident",
+     "120 bpm",
+     "D major",
+     "piano arpeggio",
+     "soft steady drums",
+     "clean modern production",
+     "leaves space for narration"
+    ],
+    "negative_styles": [
+     "vocals",
+     "singing"
+    ]
+   },
+   {
+    "text": "[Bridge]\n[Instrumental]",
+    "duration_ms": 20900,
+    "positive_styles": [
+     "thoughtful, attentive",
+     "120 bpm",
+     "D minor",
+     "steady ticking pulse that drops out halfway",
+     "soft pad",
+     "quiet"
+    ],
+    "negative_styles": [
+     "vocals",
+     "singing"
+    ]
+   },
+   {
+    "text": "[Build]\n[Instrumental]",
+    "duration_ms": 4100,
+    "positive_styles": [
+     "peak energy, loudest part of the song",
+     "120 bpm",
+     "D major",
+     "driving eighth-note bass",
+     "sixteenth-note plucks",
+     "full drums",
+     "bright, energetic"
+    ],
+    "negative_styles": [
+     "vocals",
+     "singing",
+     "quiet",
+     "sparse",
+     "fade"
+    ]
+   },
+   {
+    "text": "[Outro]\n[Instrumental]\n{gently resolving, ends on a long warm D major chord that fades}",
+    "duration_ms": 29462,
+    "positive_styles": [
+     "resolving, calm, warm",
+     "120 bpm",
+     "D major",
+     "soft piano",
+     "gentle pad",
+     "sparse",
+     "fades out"
+    ],
+    "negative_styles": [
+     "vocals",
+     "singing",
+     "drums"
+    ]
+   }
+  ]
+ }
+}

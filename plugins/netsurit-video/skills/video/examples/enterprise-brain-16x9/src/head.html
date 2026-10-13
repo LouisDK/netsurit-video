@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Enterprise Brain · Netsurit</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { width: min(100vw, calc(100vh * 16 / 9)); height: auto; aspect-ratio: 16 / 9; display: block; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  THE ENTERPRISE BRAIN — "Words, Numbers, Beliefs". 16:9, ~2:50, 30fps, motion on 1s, narrated (George).
+//  The company's head starts hollow; the Librarian (an assistant over files) and the Clerk (an agent wired
+//  into CRM/ERP) each fail to fill it; it turns saffron the moment it keeps beliefs, and ends full, with both
+//  of them plugged into it. Saffron = memory / belief, nothing else.
+//  The voice is the clock: every cue below comes from VOICE (voice.json, injected by build.mjs).
+//  Build: node plugins/animate/skills/animate/tools/build.mjs pieces/enterprise-brain
+// =====================================================================
+const FPS = 30, W = 1920, H = 1080, FORMAT = '16:9';
+const BPM = 120, BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;
+const DURATION = VOICE.duration;                  // the story ends with the voice and the track
+const END_CARD = 5.5;                             // then the Netsurit end card (src/brand.js)
+const TOTAL = DURATION + END_CARD;
+const NFRAMES = Math.round(TOTAL * FPS);
+const LOOP_T = NFRAMES / FPS;
+const SAFE = { top: 60, bottom: 110, right: 60 };
+const CX = W / 2;
+const HAND = '"Ink Free", "Segoe Print", "Bradley Hand", "Chalkboard SE", "Comic Sans MS", "Comic Neue", cursive';   // the storyboard's note font
+
+// ---- the voice: VL(id) = a line { t0, t1, words }, VW(id, word, n) = when its n-th `word` starts
+const VL = (id) => VOICE.lines.find((l) => l.id === id) || (() => { throw new Error('no voice line ' + id); })();
+const norm = (s) => s.toLowerCase().replace(/[^a-z0-9']/g, '');
+function VW(id, word, n = 1) {
+  const L = VL(id), w = norm(word); let k = 0;
+  for (const x of L.words || []) if (norm(x.w).startsWith(w) && ++k === n) return x.t0;
+  return L.t0;   // not heard: fall back to the line start (check the cue)
+}
+const VE = (id, word, n = 1) => { const L = VL(id), w = norm(word); let k = 0; for (const x of L.words || []) if (norm(x.w).startsWith(w) && ++k === n) return x.t1; return L.t1; };
+const snap8 = (t) => +(Math.round(t / E8) * E8).toFixed(3);       // morph centres sit on the 120 BPM 8th grid
+const gap = (a, b) => snap8((VL(a).t1 + VL(b).t0) / 2);   // the middle of the pause between two lines
+
+// ---- eras, joined by shape morphs in the pauses between chapters
+const M_LIB = gap('h4', 'l1');     // a question bubble -> the Librarian's answer card
+const M_CLK = gap('l6', 'c1');     // a document card -> the Clerk's ledger
+const M_TRN = gap('c4', 't1');     // the ledger -> the right-hand room of the turn
+const M_BRN = snap8(VL('b1').t0 - 1.35);        // the empty slot -> the saffron head
+const HIT = +(M_BRN + 0.45).toFixed(3);         // the loudest hit as the head opens: in the pause before "That's what an enterprise brain keeps"
+const M_CLM = gap('b2', 'b3');     // the cream disc -> the email card
+const M_SIG = gap('b5', 'b6');     // the claim card -> the rhythm strip
+const M_END = gap('b9', 'r1');     // the network -> the cream disc in the head
+const ERA_LIST = [
+  [0, M_LIB, () => sceneHook()],
+  [M_LIB, M_CLK, () => sceneLibrarian()],
+  [M_CLK, M_TRN, () => sceneClerk()],
+  [M_TRN, M_BRN, () => sceneTurn()],
+  [M_BRN, M_CLM, () => sceneBrain()],
+  [M_CLM, M_SIG, () => sceneClaim()],
+  [M_SIG, M_END, () => sceneSignals()],
+  [M_END, TOTAL, () => sceneLoop()],
+];
+const SHOTS = [
+  //  key         era  t0      t1        title
+  ['hook',        0,   0,      M_LIB,    'a new rule lands; the hollow head; facts scattered, nothing connects'],
+  ['librarian',   1,   M_LIB,  M_CLK,    'the Librarian: top few documents, both weigh the same, starts from scratch'],
+  ['clerk',       2,   M_CLK,  M_TRN,    'the Clerk: a fresh query, twenty rows, the email outside the grid'],
+  ['turn',        3,   M_TRN,  M_BRN,    'two rooms apart, an empty slot glowing between them; silence'],
+  ['brain',       4,   M_BRN,  M_CLM,    'the head turns saffron; the same facts flow in and connect'],
+  ['claim',       5,   M_CLM,  M_SIG,    'one email becomes a claim; the plan changes, the old belief stays behind'],
+  ['signals',     6,   M_SIG,  M_END,    'it hears silence, names what it does not know, computes every customer'],
+  ['loop',        7,   M_END,  TOTAL,    'decisions flow back; the Librarian and the Clerk plug in; memory compounds'],
+];
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, duration: TOTAL, frames: NFRAMES, loop: LOOP_T, safe: SAFE, aspect: FORMAT,
+  format: 'morph-chain',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: [],
+  morphs: [M_LIB, M_CLK, M_TRN, M_BRN, M_CLM, M_SIG, M_END],
+  hit: HIT,
+  cues: {},
+  acts: [
+    { name: '1 Hook',      role: 'build',   t0: 0,      t1: M_LIB },
+    { name: '2 Keepers',   role: 'journey', t0: M_LIB,  t1: VL('t2').t1 },
+    { name: '3 Silence',   role: 'silence', t0: VL('t2').t1 + 0.3, t1: HIT },
+    { name: '4 The brain', role: 'gift',    t0: HIT,    t1: M_END },
+    { name: '5 Compounds', role: 'goodbye', t0: M_END,  t1: TOTAL },
+  ],
+  board: [
+    { t: VE('h1', 'lands') + 0.8, title: 'a new rule lands beside the hollow head', sound: 'quiet pad; a stamp thud on "lands"', next: 'two questions' },
+    { t: VL('h3').t1 - 0.2, title: 'every fact exists; none of them connects', sound: 'soft plucks as the facts pop', next: 'the "?"' },
+    { t: VL('h4').t1 + 0.1, title: 'so who do you ask?', sound: 'a rising blip', next: 'the "?" becomes the answer card' },
+    { t: VE('l3', 'page') + 0.3, title: 'the Librarian lights the first three', sound: 'page-tick plucks', next: 'the scale' },
+    { t: VL('l4').t1 + 0.2, title: 'both weigh the same', sound: 'a deflating two-note figure', next: 'tomorrow' },
+    { t: VL('l6').t1 + 0.3, title: 'WORDS, NOT BELIEFS', sound: 'a soft band hit', next: 'a document becomes the ledger' },
+    { t: VE('c3', 'rows') + 0.6, title: 'the Clerk: twenty rows, then the cut', sound: 'row-click motif', next: 'the email outside' },
+    { t: VL('c4').t1 + 0.3, title: 'NUMBERS, NOT BELIEFS', sound: 'a soft band hit', next: 'the ledger becomes its room' },
+    { t: VL('t2').t1 + 0.8, title: 'what we believe, and why: an empty slot', sound: 'SILENCE (hard stop)', next: 'the slot becomes the head: LOUDEST HIT' },
+    { t: VL('b2').t1, title: 'the brain: the facts connect; the notebook fills itself', sound: 'warm pad; rising fifth', next: 'the disc becomes the email' },
+    { t: VL('b4').t1 + 0.3, title: 'one email, one claim', sound: 'chimes per row', next: 'v2' },
+    { t: VL('b5').t1, title: 'superseded, and kept', sound: 'a soft slide', next: 'the claim becomes the signals card' },
+    { t: VL('b7').t1 + 0.3, title: 'it hears silence', sound: 'the tick motif stops', next: 'the gap' },
+    { t: VL('b8').t1, title: 'it names the gap; a task', sound: 'a question figure, resolved', next: 'every customer' },
+    { t: VL('b9').t1 + 0.6, title: 'it asks every customer at once', sound: 'fullest section', next: 'the network becomes the disc' },
+    { t: VL('r2').t1, title: 'the Librarian and the Clerk ask the brain first', sound: 'resolving', next: 'models vs memory' },
+    { t: DURATION - 0.6, title: 'models depreciate; memory compounds; it stays', sound: 'warm final chord, fade', next: 'the end card' },
+    { t: TOTAL - 0.5, title: 'the Netsurit end card: lockup, title, byline', sound: 'the track\'s tail, then silence', next: 'end' },
+  ],
+  narration: VOICE.lines.map((l) => ({ id: l.id, t0: l.t0, t1: l.t1, text: l.text })),
+};
+window.TIMELINE = TIMELINE;

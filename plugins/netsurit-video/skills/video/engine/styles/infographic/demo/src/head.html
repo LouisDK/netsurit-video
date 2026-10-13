@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Infographic demo</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #dfe9f0; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  INFOGRAPHIC DEMO — 9:16, 6.0s @ 120 BPM, 30fps, motion on 1s. A saffron head in profile fills with
+//  knowledge (flow loops, gears, a donut chart, bubbles, a bar chart); the cream disc inside it becomes a
+//  knowledge card on a pale blue sheet: a navy header, rows and pills pop in, sources connect, a network glows.
+//  Proves the style kit renders, morphs and stays deterministic.
+//  Build: node <skill>/tools/build.mjs <skill>/styles/infographic/demo
+// =====================================================================
+const FPS = 30, W = 1080, H = 1920;
+const BPM = 120, BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;
+const DURATION = 6.0;
+const NFRAMES = Math.round(DURATION * FPS);
+const LOOP_T = NFRAMES / FPS;
+const SAFE = { top: 240, bottom: 420, right: 140 };
+const CX = 500;
+
+const ERA_LIST = [[0, 3, () => sceneMind()], [3, 6, () => sceneCard()]];
+const SHOTS = [
+  ['mind', 0, 0.0, 3.0, 'a head in profile fills with knowledge'],
+  ['card', 1, 3.0, 6.0, 'the disc becomes a knowledge card; sources connect, pills pop'],
+];
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, duration: DURATION, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  format: 'morph-chain',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: [],
+  morphs: [3.0],
+  cues: { head: 0.05, disc: 0.35, donut: 0.6, flows: 0.5, bars: 1.0, bubble: 1.25, checks: 1.5, hop: 1.9,
+          title: 3.45, header: 3.6, rows: 3.85, pills: 4.35, sources: 4.6, net: 3.5, wave: 5.0 },
+  acts: [
+    { name: '1 Mind', role: 'build', t0: 0.0, t1: 3.0 },
+    { name: '2 Card', role: 'gift',  t0: 3.0, t1: 6.0 },
+  ],
+  board: [
+    { t: 2.4, title: 'a head full of knowledge', sound: 'a warm pad, plucks per pop', next: 'the disc becomes a card' },
+    { t: 5.5, title: 'the knowledge card', sound: 'soft blips per pill, a chime', next: 'loops' },
+  ],
+  narration: [],
+};
+window.TIMELINE = TIMELINE;

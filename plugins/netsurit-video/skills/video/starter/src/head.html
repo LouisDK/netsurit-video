@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { max-width: 100vw; max-height: 100vh; width: auto; height: auto; display: block; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  NETSURIT STARTER — a Netsurit-branded infographic explainer in the shape proven on "The Enterprise Brain":
+//  illustration on white (a hollow charcoal head = the problem) -> an infographic sheet on Mist -> the head
+//  filled, a red core (the payoff) -> the black Netsurit end card. Eras are joined by shape morphs that sit in
+//  the pauses between voice lines. Replace the scenes, the script and the byline with your piece's.
+//  One piece, two shapes: 9:16 (WhatsApp, the primary send) and 16:9 (presentations, LinkedIn, email).
+//  Scenes read the layout object L (src/scenes.js), one arrangement per shape (PORTRAIT / WIDE come from the engine's
+//  kit/core.js) — never crop one shape into the other.
+//  Preview: open index.html (click to hear the score; ?t=12.5 freezes a frame; ?format=16:9 shows the other shape).
+// =====================================================================
+const BYLINE = {
+  title: '__TITLE__',                 // the lower third and the end card's eyebrow
+  tagline: __TAGLINE__,                // the end card's headline, one entry per line on 9:16 (joined on 16:9)
+  name: '__NAME__', unit: '__UNIT__', date: '__DATE__',
+};
+const FORMATS = { '9:16': [1080, 1920], '16:9': [1920, 1080] };
+const FORMAT = new URLSearchParams(location.search).get('format') || '__FORMAT__';   // the main format (piece.json "formats"[0])
+const FPS = 30, [W, H] = FORMATS[FORMAT];
+{ const cv = document.getElementById('c'); cv.width = W; cv.height = H; }
+// the player UI: WhatsApp's top bar and scrubber on 9:16; a video player's controls on 16:9
+const SAFE = H > W ? { top: 180, bottom: 220, right: 60 } : { top: 60, bottom: 110, right: 60 };
+const CX = W / 2;
+const HAND = '"Ink Free", "Segoe Print", "Bradley Hand", "Chalkboard SE", "Comic Sans MS", "Comic Neue", cursive';   // the storyboard's note font
+
+// ---- the voice is the clock. With voice.json (tools/voice.mjs) the build injects VOICE and every cue below lands on
+// the spoken word. Before the voice exists, SCRIPT (keep it in step with voice/script.json) gives a stand-in timing at
+// ~2.6 words/s, so the piece can be built and previewed from day one.
+const SCRIPT = { lead: 1.2, tail: 1.6, lines: [
+  ['l1', 'Every fact you need already exists somewhere in the company. But nothing connects them.', 0.8],
+  ['l2', 'So we give every fact a home: one card, its source, and how sure we are.', 0.8],
+  ['l3', 'Now the company remembers. And every answer starts from what it already knows.', 0.6],
+] };
+const HAS_VOICE = typeof VOICE !== 'undefined';
+const V = HAS_VOICE ? VOICE : (() => {
+  let t = SCRIPT.lead; const lines = [];
+  for (const [id, text, after] of SCRIPT.lines) {
+    const ws = text.split(/\s+/), d = ws.length / 2.6, t0 = t;
+    lines.push({ id, text, t0, t1: t0 + d, words: ws.map((w, i) => ({ w, t0: t0 + i * d / ws.length, t1: t0 + (i + 1) * d / ws.length })) });
+    t += d + after;
+  }
+  return { lines, duration: t - SCRIPT.lines.at(-1)[2] + SCRIPT.tail };
+})();
+// VL(id) = a line { t0, t1, words }; VW(id, word, n) = when its n-th `word` starts; VE = when it ends
+const VL = (id) => V.lines.find((l) => l.id === id) || (() => { throw new Error('no voice line ' + id); })();
+const norm = (s) => s.toLowerCase().replace(/[^a-z0-9']/g, '');
+function VW(id, word, n = 1) { const L = VL(id), w = norm(word); let k = 0; for (const x of L.words || []) if (norm(x.w).startsWith(w) && ++k === n) return x.t0; return L.t0; }
+function VE(id, word, n = 1) { const L = VL(id), w = norm(word); let k = 0; for (const x of L.words || []) if (norm(x.w).startsWith(w) && ++k === n) return x.t1; return L.t1; }
+
+// a supplied music track (Eleven Music or licensed): tools/beats.mjs -> beats.json -> BEATS. Else a 120 BPM grid.
+const BPM = typeof BEATS !== 'undefined' ? BEATS.bpm : 120, GRID0 = typeof BEATS !== 'undefined' ? BEATS.offset : 0;
+const BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;
+const onBeat = (t) => +(GRID0 + Math.round((t - GRID0) / E8) * E8).toFixed(3);   // morphs and big cues sit on the 8th grid
+const gap = (a, b) => onBeat((VL(a).t1 + VL(b).t0) / 2);                         // the middle of the pause between two lines
+
+const DURATION = V.duration;        // the story ends with the voice
+const END_CARD = 5.5;               // then the Netsurit end card (src/brand.js)
+const TOTAL = DURATION + END_CARD;
+const NFRAMES = Math.round(TOTAL * FPS);
+const LOOP_T = NFRAMES / FPS;
+
+// ---- eras, joined by shape morphs in the pauses between lines
+const M1 = gap('l1', 'l2');         // the "?" bubble -> the sheet's card
+const M2 = gap('l2', 'l3');         // the card -> the filled head
+const HIT = +(M2 + 0.3).toFixed(3); // the loudest moment: the head arrives (in a pause, never under a word)
+const ERA_LIST = [
+  [0, M1, () => sceneProblem()],
+  [M1, M2, () => sceneSheet()],
+  [M2, TOTAL, () => scenePayoff()],
+];
+const SHOTS = [
+  //  key        era  t0   t1     title
+  ['problem',    0,   0,   M1,    'the hollow head: every fact exists, nothing connects'],
+  ['sheet',      1,   M1,  M2,    'one card per fact: its source, how sure we are'],
+  ['payoff',     2,   M2,  TOTAL, 'the head fills, a red core; then the end card'],
+];
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, gridOffset: GRID0, duration: TOTAL, frames: NFRAMES, loop: LOOP_T, safe: SAFE, aspect: FORMAT,
+  format: 'morph-chain',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: [],
+  morphs: [M1, M2],
+  hit: HIT,
+  cues: {},
+  acts: [
+    { name: '1 Problem', role: 'build',   t0: 0,   t1: M1 },
+    { name: '2 Card',    role: 'journey', t0: M1,  t1: M2 - 0.6 },
+    { name: '3 Pause',   role: 'silence', t0: M2 - 0.6, t1: HIT },
+    { name: '4 Payoff',  role: 'gift',    t0: HIT, t1: DURATION },
+    { name: '5 End card', role: 'goodbye', t0: DURATION, t1: TOTAL },
+  ],
+  board: [
+    { t: VL('l1').t1 - 0.2, title: 'every fact exists; nothing connects', sound: 'soft plucks as the facts pop', next: 'the "?" becomes the card' },
+    { t: VL('l2').t1, title: 'one card: the fact, its source, how sure', sound: 'blips per row, a chime', next: 'the card becomes the head: the hit' },
+    { t: DURATION - 0.6, title: 'the company remembers', sound: 'warm resolve', next: 'the end card' },
+    { t: TOTAL - 0.5, title: 'the Netsurit end card', sound: 'the tail, then silence', next: 'end' },
+  ],
+  narration: HAS_VOICE ? V.lines.map((l) => ({ id: l.id, t0: l.t0, t1: l.t1, text: l.text })) : [],
+};
+window.TIMELINE = TIMELINE;

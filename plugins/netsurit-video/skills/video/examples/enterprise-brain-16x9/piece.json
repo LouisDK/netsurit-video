@@ -1,0 +1,48 @@
+{
+  "name": "enterprise-brain-netsurit",
+  "title": "The Enterprise Brain (Netsurit CI)",
+  "format": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "bpm": 120,
+    "duration": 176.712,
+    "frames": 5301
+  },
+  "formats": [
+    "16:9"
+  ],
+  "storyFormat": "morph chain, voice-led (8 eras, 7 shape morphs)",
+  "style": "infographic",
+  "scenes": [
+    "src/brand.js",
+    "src/common.js",
+    "src/s0-hook.js",
+    "src/s1-librarian.js",
+    "src/s2-clerk.js",
+    "src/s3-turn.js",
+    "src/s4-brain.js",
+    "src/s5-claim.js",
+    "src/s6-signals.js",
+    "src/s7-loop.js",
+    "src/cams.js"
+  ],
+  "voice": {
+    "file": "voice/voice.wav",
+    "music": -15.1
+  },
+  "review": {
+    "safe": {
+      "top": 60,
+      "bottom": 110,
+      "right": 60
+    },
+    "refs": {}
+  },
+  "music": {
+    "file": "audio/track-endcard.wav",
+    "start": 0,
+    "gain": 0,
+    "fade": 0.5
+  }
+}

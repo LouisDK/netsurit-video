@@ -1,0 +1,10 @@
+# renders and intermediates (rebuilt by the tools)
+**/frames/
+**/frames-*/
+**/renders/
+**/review/
+**/index.html
+node_modules/
+__pycache__/
+# secrets
+.env
