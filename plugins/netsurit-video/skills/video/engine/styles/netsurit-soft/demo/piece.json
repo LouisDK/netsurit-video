@@ -1,0 +1,9 @@
+{
+  "name": "netsurit-soft-demo",
+  "title": "Netsurit soft demo",
+  "format": { "width": 1080, "height": 1920, "fps": 30, "bpm": 120, "duration": 17.5, "frames": 525 },
+  "storyFormat": "morph chain with wipes (4 eras, 1 shape morph, 2 diagonal wipes)",
+  "style": "netsurit-soft",
+  "scenes": ["styles/netsurit-soft/brand.js", "src/scenes.js"],
+  "review": { "safe": { "top": 180, "bottom": 220, "right": 60 }, "refs": {} }
+}

@@ -25,7 +25,7 @@ Object.assign(IG, {
   white: NS.white, paper: NS.white,
   wash: NS.mist, washD: '#E3E2E9', washL: NS.off,
   saffron: NS.charcoal, saffronD: '#4A4645',          // the hero head: charcoal, with a lighter grain
-  core: NS.red, coreL: '#FBD3D8', cream: NS.red,       // the head's core (the kit's cream disc): red
+  core: NS.red, coreL: '#FBD3D8', cream: '#F2D6C4',   // the head's core: red (IG.core); the kit's cream is also igPerson's skin, so it stays skin
   peri: NS.azure, lav: NS.steel, indigo: NS.charcoal,
   ink: NS.charcoal,
   navy: NS.charcoal, navyD: NS.black, navyT: NS.black,
@@ -162,7 +162,8 @@ function nsEndCardNow(t0) {
     let p = P(0.75);
     igText(eyebrow, tx, 352 + lift(p), 22, NS.red, { weight: 700, track: 2.2, alpha: A(p) });
     p = P(0.9);
-    igText(tag.join(' '), tx, 440 + lift(p), 76, NS.white, { weight: 700, alpha: A(p) });
+    const tl = tag.join(' '), ts = Math.min(76, 76 * (W - SAFE.right - 40 - tx) / igW(tl, 76, { weight: 700 }));   // shrink to fit: a long tagline ran off the frame
+    igText(tl, tx, 440 + lift(p), ts, NS.white, { weight: 700, alpha: A(p) });
     p = P(1.7);
     igText(B.name, tx, 560 + lift(p), 40, NS.white, { weight: 700, alpha: A(p) });
     igText([B.unit, B.date].filter(Boolean).join('  ·  '), tx, 610 + lift(p), 32, NS.steel, { alpha: A(p) });

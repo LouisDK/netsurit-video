@@ -21,7 +21,12 @@ Two options. **Composed in code** (`src/score.js`, free, proven, every hit exact
      "[0:a]atrim=0:82.45,afade=t=out:st=82.33:d=0.12,apad=whole_dur=84.19[x];[0:a]atrim=start=84.01,asetpts=PTS-STARTPTS[y];[x][y]concat=n=2:v=0:a=1" \
      -ar 48000 track-raw.wav
    ```
-6. **Section gains** so the review's arc passes (the model only partly follows "fullest" / "fades" in the prompt). What worked: the build −1.5 dB, the payoff 0 dB, later proof sections −1 to −2 dB, the close −7 dB ramped over 1.5 s:
+6. **Compress the take first.** The model puts accents on bar starts that peak as high as the hit, and the review's loudest-moment check then lands on one of them. A 4:1 compressor before the gains evens them out (proven on Destination and brief intelligence):
+   ```bash
+   ffmpeg -i track-raw.wav -af "acompressor=threshold=0.06:ratio=4:attack=5:release=150:makeup=1,volume=-5dB:enable='lt(t,37.97)',volume=-6dB:enable='gte(t,76.8)'" track.wav
+   ```
+   Then make the hit itself land on the `'s'` bus (a stab plus a sub, no long pad: a pad's swell peaks after the hit, not on it).
+   **Section gains** so the review's arc passes (the model only partly follows "fullest" / "fades" in the prompt). What worked: the build −1.5 dB, the payoff 0 dB, later proof sections −1 to −2 dB, the close −7 dB ramped over 1.5 s:
    ```bash
    # example: the build (20-82 s) down 1.5 dB, the close (from 150 s) down 7 dB
    ffmpeg -i track-raw.wav -af "volume=-1.5dB:enable='between(t,20,82)',volume=-7dB:enable='gte(t,150)'" track.wav

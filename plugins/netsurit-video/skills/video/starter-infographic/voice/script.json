@@ -1,0 +1,9 @@
+{
+  "lead": 1.2,
+  "tail": 1.6,
+  "lines": [
+    { "id": "l1", "text": "Every fact you need already exists somewhere in the company. But nothing connects them.", "after": 0.8 },
+    { "id": "l2", "text": "So we give every fact a home: one card, its source, and how sure we are.", "after": 0.8 },
+    { "id": "l3", "text": "Now the company remembers. And every answer starts from what it already knows.", "after": 0.6 }
+  ]
+}

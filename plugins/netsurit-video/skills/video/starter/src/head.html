@@ -15,12 +15,13 @@
 <script>
 "use strict";
 // =====================================================================
-//  NETSURIT STARTER — a Netsurit-branded infographic explainer in the shape proven on "The Enterprise Brain":
-//  illustration on white (a hollow charcoal head = the problem) -> an infographic sheet on Mist -> the head
-//  filled, a red core (the payoff) -> the black Netsurit end card. Eras are joined by shape morphs that sit in
-//  the pauses between voice lines. Replace the scenes, the script and the byline with your piece's.
+//  NETSURIT STARTER — a Netsurit explainer in the netsurit-soft style (engine/styles/netsurit-soft/STYLE.md):
+//  a team at a table (the byline opens) -> (the lamp morphs) one person at a red laptop -> (a diagonal wipe) the
+//  services sheet with the red flag row -> (a wipe, a held silence) the red arrow rising: the hit -> the black Netsurit
+//  end card. The morph and the wipes sit in the pauses between voice lines. Replace the scenes, the script and the
+//  byline with your piece's.
 //  One piece, two shapes: 9:16 (WhatsApp, the primary send) and 16:9 (presentations, LinkedIn, email).
-//  Scenes read the layout object L (src/scenes.js), one arrangement per shape (PORTRAIT / WIDE come from the engine's
+//  Scenes read the layout object LAY (src/scenes.js), one arrangement per shape (PORTRAIT / WIDE come from the engine's
 //  kit/core.js) — never crop one shape into the other.
 //  Preview: open index.html (click to hear the score; ?t=12.5 freezes a frame; ?format=16:9 shows the other shape).
 // =====================================================================
@@ -42,9 +43,10 @@ const HAND = '"Ink Free", "Segoe Print", "Bradley Hand", "Chalkboard SE", "Comic
 // the spoken word. Before the voice exists, SCRIPT (keep it in step with voice/script.json) gives a stand-in timing at
 // ~2.6 words/s, so the piece can be built and previewed from day one.
 const SCRIPT = { lead: 1.2, tail: 1.6, lines: [
-  ['l1', 'Every fact you need already exists somewhere in the company. But nothing connects them.', 0.8],
-  ['l2', 'So we give every fact a home: one card, its source, and how sure we are.', 0.8],
-  ['l3', 'Now the company remembers. And every answer starts from what it already knows.', 0.6],
+  ['l1', 'Your team is here to run the business.', 0.8],
+  ['l2', 'Not to spend the day fixing the IT.', 0.8],
+  ['l3', 'So we handle it: cloud, security and support, in one place.', 2.2],
+  ['l4', 'And your business is free to grow.', 0.6],
 ] };
 const HAS_VOICE = typeof VOICE !== 'undefined';
 const V = HAS_VOICE ? VOICE : (() => {
@@ -65,7 +67,7 @@ function VE(id, word, n = 1) { const L = VL(id), w = norm(word); let k = 0; for 
 // a supplied music track (Eleven Music or licensed): tools/beats.mjs -> beats.json -> BEATS. Else a 120 BPM grid.
 const BPM = typeof BEATS !== 'undefined' ? BEATS.bpm : 120, GRID0 = typeof BEATS !== 'undefined' ? BEATS.offset : 0;
 const BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;
-const onBeat = (t) => +(GRID0 + Math.round((t - GRID0) / E8) * E8).toFixed(3);   // morphs and big cues sit on the 8th grid
+const onBeat = (t) => +(GRID0 + Math.round((t - GRID0) / E8) * E8).toFixed(3);   // morphs, wipes and big cues sit on the 8th grid
 const gap = (a, b) => onBeat((VL(a).t1 + VL(b).t0) / 2);                         // the middle of the pause between two lines
 
 const DURATION = V.duration;        // the story ends with the voice
@@ -74,40 +76,48 @@ const TOTAL = DURATION + END_CARD;
 const NFRAMES = Math.round(TOTAL * FPS);
 const LOOP_T = NFRAMES / FPS;
 
-// ---- eras, joined by shape morphs in the pauses between lines
-const M1 = gap('l1', 'l2');         // the "?" bubble -> the sheet's card
-const M2 = gap('l2', 'l3');         // the card -> the filled head
-const HIT = +(M2 + 0.3).toFixed(3); // the loudest moment: the head arrives (in a pause, never under a word)
+// ---- eras, joined in the pauses between lines: a shape morph (M1) and two diagonal wipes (W1, W2; the kit draws a
+// wipe centred on each time in NSS_WIPES, and the eras hard-cut underneath it)
+const M1 = gap('l1', 'l2');         // the team's lamp -> the lamp over the desk
+const W1 = gap('l2', 'l3');         // wipe to the services sheet
+const W2 = gap('l3', 'l4');         // wipe to the rise (after a held silence)
+const NSS_WIPES = [W1, W2];
+const ARROW = +(W2 + 0.15).toFixed(3);   // the arrow starts rising as the wipe clears
+const HIT = +(ARROW + 0.6).toFixed(3);   // the loudest moment: the arrow lands (in the pause, before l4 starts)
 const ERA_LIST = [
-  [0, M1, () => sceneProblem()],
-  [M1, M2, () => sceneSheet()],
-  [M2, TOTAL, () => scenePayoff()],
+  [0, M1, () => sceneTeam()],
+  [M1, W1, () => sceneDesk()],
+  [W1, W2, () => sceneSheet()],
+  [W2, TOTAL, () => sceneRise()],
 ];
 const SHOTS = [
-  //  key        era  t0   t1     title
-  ['problem',    0,   0,   M1,    'the hollow head: every fact exists, nothing connects'],
-  ['sheet',      1,   M1,  M2,    'one card per fact: its source, how sure we are'],
-  ['payoff',     2,   M2,  TOTAL, 'the head fills, a red core; then the end card'],
+  //  key      era  t0   t1     title
+  ['team',     0,   0,   M1,    'a team at a table: the business they run'],
+  ['desk',     1,   M1,  W1,    'one person at a red laptop: not fixing the IT'],
+  ['sheet',    2,   W1,  W2,    'the services: the red flag row, a rising chart'],
+  ['rise',     3,   W2,  TOTAL, 'the red arrow rises: the hit; then the end card'],
 ];
 const TIMELINE = {
   width: W, height: H, fps: FPS, bpm: BPM, gridOffset: GRID0, duration: TOTAL, frames: NFRAMES, loop: LOOP_T, safe: SAFE, aspect: FORMAT,
   format: 'morph-chain',
   shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
-  cuts: [],
-  morphs: [M1, M2],
+  cuts: [W1, W2],
+  morphs: [M1],
   hit: HIT,
   cues: {},
   acts: [
-    { name: '1 Problem', role: 'build',   t0: 0,   t1: M1 },
-    { name: '2 Card',    role: 'journey', t0: M1,  t1: M2 - 0.6 },
-    { name: '3 Pause',   role: 'silence', t0: M2 - 0.6, t1: HIT },
-    { name: '4 Payoff',  role: 'gift',    t0: HIT, t1: DURATION },
-    { name: '5 End card', role: 'goodbye', t0: DURATION, t1: TOTAL },
+    { name: '1 Team',    role: 'build',   t0: 0,   t1: M1 },
+    { name: '2 Desk',    role: 'build',   t0: M1,  t1: W1 },
+    { name: '3 Sheet',   role: 'journey', t0: W1,  t1: W2 - 0.6 },
+    { name: '4 Pause',   role: 'silence', t0: W2 - 0.6, t1: HIT },
+    { name: '5 Rise',    role: 'gift',    t0: HIT, t1: DURATION },
+    { name: '6 End card', role: 'goodbye', t0: DURATION, t1: TOTAL },
   ],
   board: [
-    { t: VL('l1').t1 - 0.2, title: 'every fact exists; nothing connects', sound: 'soft plucks as the facts pop', next: 'the "?" becomes the card' },
-    { t: VL('l2').t1, title: 'one card: the fact, its source, how sure', sound: 'blips per row, a chime', next: 'the card becomes the head: the hit' },
-    { t: DURATION - 0.6, title: 'the company remembers', sound: 'warm resolve', next: 'the end card' },
+    { t: M1 - 0.4, title: 'the team runs the business', sound: 'soft plucks as people pop in', next: 'the lamp morphs' },
+    { t: W1 - 0.5, title: 'one person, not fixing the IT', sound: 'typing blips', next: 'a diagonal wipe' },
+    { t: W2 - 0.7, title: 'cloud, security, support: one place', sound: 'blips per row, then silence', next: 'a wipe; the arrow' },
+    { t: DURATION - 0.6, title: 'free to grow', sound: 'the hit as the arrow lands, warm after', next: 'the end card' },
     { t: TOTAL - 0.5, title: 'the Netsurit end card', sound: 'the tail, then silence', next: 'end' },
   ],
   narration: HAS_VOICE ? V.lines.map((l) => ({ id: l.id, t0: l.t0, t1: l.t1, text: l.text })) : [],

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Netsurit soft demo</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { height: min(100vh, calc(100vw * 16 / 9)); width: auto; aspect-ratio: 9 / 16; display: block; cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+"use strict";
+// =====================================================================
+//  NETSURIT SOFT DEMO — 9:16, 12s @ 30fps. A team at a table -> (the lamp morphs) one person at a red laptop ->
+//  (a diagonal wipe) the services sheet with the red flag row -> (a wipe) the red arrow rising. Proves the style
+//  renders, morphs, wipes and stays deterministic. Build: node <skill>/engine/tools/build.mjs styles/netsurit-soft/demo
+// =====================================================================
+const FPS = 30, W = 1080, H = 1920;
+const BPM = 120, BEAT = 60 / BPM, E8 = BEAT / 2, E16 = BEAT / 4;
+const DURATION = 12.0;              // the story
+const END_CARD = 5.5;               // then the Netsurit end card (styles/netsurit-soft/brand.js)
+const TOTAL = DURATION + END_CARD;
+const NFRAMES = Math.round(TOTAL * FPS);
+const LOOP_T = NFRAMES / FPS;
+const SAFE = { top: 180, bottom: 220, right: 60 };
+const HAND = '"Ink Free", "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive';   // the storyboard's note font
+const CX = W / 2;
+const BYLINE = { title: 'Netsurit soft', tagline: ['Soft geometric,', 'still bold.'], name: 'Louis de Klerk', unit: 'Netsurit Innovate', date: 'October 2026' };
+const NSS_WIPES = [6.0, 9.0];   // the diagonal wipes (the kit draws them; the eras hard-cut underneath)
+
+const ERA_LIST = [[0, 3, () => sceneTeam()], [3, 6, () => sceneDesk()], [6, 9, () => sceneSheet()], [9, TOTAL, () => sceneRise()]];
+const SHOTS = [
+  ['team',  0, 0.0, 3.0, 'a team around a table, a chart on the laptop'],
+  ['desk',  1, 3.0, 6.0, 'the lamp becomes the lamp over one person at a red laptop'],
+  ['sheet', 2, 6.0, 9.0, 'a wipe to the services: the red flag row, a chart'],
+  ['rise',  3, 9.0, TOTAL, 'a wipe to the red arrow rising, then the end card'],
+];
+const TIMELINE = {
+  width: W, height: H, fps: FPS, bpm: BPM, duration: TOTAL, frames: NFRAMES, loop: LOOP_T, safe: SAFE,
+  format: 'morph-chain',
+  shots: SHOTS.map(([key, era, t0, t1, title], i) => ({ id: i + 1, key, era, t0, t1, title })),
+  cuts: [6.0, 9.0],
+  morphs: [3.0],
+  cues: { team: 0.2, desk: 3.4, rows: 6.45, chart: 7.2, arrow: 9.45 },
+  acts: [
+    { name: '1 Team',  role: 'build', t0: 0.0, t1: 3.0 },
+    { name: '2 Desk',  role: 'build', t0: 3.0, t1: 6.0 },
+    { name: '3 Sheet', role: 'turn',  t0: 6.0, t1: 9.0 },
+    { name: '4 Rise',  role: 'gift',  t0: 9.0, t1: 12.0 },
+    { name: '5 End',   role: 'goodbye', t0: 12.0, t1: TOTAL },
+  ],
+  board: [
+    { t: 2.3, title: 'the team', sound: 'soft plucks as people pop in', next: 'the lamp morphs' },
+    { t: 5.3, title: 'one person, a red laptop', sound: 'typing blips', next: 'a diagonal wipe' },
+    { t: 8.5, title: 'the services', sound: 'blips per row', next: 'a diagonal wipe' },
+    { t: 11.4, title: 'the rise', sound: 'the hit as the arrow lands', next: 'the end card wipes in' },
+    { t: 16.5, title: 'the end card', sound: 'a quiet tail', next: 'loops' },
+  ],
+  narration: [],
+};
+window.TIMELINE = TIMELINE;

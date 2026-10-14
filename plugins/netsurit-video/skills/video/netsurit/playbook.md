@@ -19,7 +19,17 @@ What worked on **The Enterprise Brain** (2:57, 8 chapters, 30 voice lines, 7 sha
 - A slow take: slow just that line with ffmpeg (`-af atempo=0.94`, keep the original), point `"file"` at the slowed WAV, rerun `voice.mjs`. Used on 3 of 30 lines.
 - **The payoff hit goes in a pause, never under a word** (the voice ducks the music; a hit under speech disappears).
 
-## Picture: the infographic look in Netsurit colours
+## Picture: netsurit-soft (the default)
+
+- The rules and the kit are in `engine/styles/netsurit-soft/STYLE.md`; the starter shows every habit in use.
+- **One red hero shape per frame** (the flag row, the arrow, the red laptop, the key bar): if a frame feels red, it has too much. Red in quantity arrives with the payoff (the arrow).
+- **A soft ground shape** (a Mist arch, a dome) behind the main subject on most frames; generous white around it.
+- **People are friendly and doing something** (pointing, typing, talking), with dot eyes and a smile: `nssPerson`. A close-up (head radius ~150) carries a chapter on its own.
+- **Chapter changes:** a shape morph where two shapes match (lamp shade to lamp shade), else a diagonal wipe (`NSS_WIPES`): a red bar leads a Mist panel along the N's 45°. Keep the wipe before the payoff silent: it's the turn.
+- **Something always moves:** pop-ins on the words, idle life (blinks, swaying lamps, typing hands), and a slow push of 3 % or less on long holds.
+- **16:9:** draw the people and furniture on the 9:16 stage, scaled and centred (`stage(LAY.team, fn)`), and draw the backdrop (arches, skyline, desk) natively wide, so the frame isn't a narrow column on white.
+
+## Picture: the infographic look (`--style infographic`, The Enterprise Brain)
 
 - Two modes: **illustration on white** (the head, people, flows, gears, bubbles) and **sheets on Mist** (a two-tone title, white cards, charcoal header bands, pills, badges, connectors). Alternate them by chapter.
 - **The hero shape is a head in profile.** Hollow (dashed Steel outline, empty dashed core) while the problem stands; charcoal with a **red core** from the payoff on. Red appears in quantity only from the payoff.
@@ -33,10 +43,11 @@ What worked on **The Enterprise Brain** (2:57, 8 chapters, 30 voice lines, 7 sha
 |---|---|---|
 | safe area | y 180–1700, x 60–1020 (WhatsApp's bar and scrubber) | 60 px top, 110 px bottom, 60 px sides |
 | arrangement | stack: title on top, the main card in the middle, actors and sources below | side by side: actor left, card centre/right |
-| captions | two short lines, 54 px, baselines 1590 / 1660 | one line, 46 px, baseline 1018 |
+| captions | soft: one line, 54 px, baseline 1650 (infographic: two lines, 1590 / 1660) | soft: one line, 46 px, baseline 1000 (infographic: 1018) |
 | titles | 84 px at y 290, subtitle 36 px | 72 px at y 150, subtitle 30 px |
 | body text | ≥ 26 px (phone) | ≥ 22 px |
-| head (hero) | ~660–720 px tall, centred | ~620–640 px tall |
+| head (hero, infographic) | ~660–720 px tall, centred | ~620–640 px tall |
+| art (soft) | ends by y ~1560; close-up head radius ~150 | floor at y 862; people on a 0.66–0.68 stage |
 | ground line | y 1440 | y 860 (the Enterprise Brain used 935; 860 leaves the lower third and caption clear when the camera zooms) |
 | lower third | bottom left, y 1548 (two byline rows) | bottom left, y 966 (one row) |
 
@@ -59,8 +70,8 @@ What worked on **The Enterprise Brain** (2:57, 8 chapters, 30 voice lines, 7 sha
 
 ## The end card and the byline
 
-- `nsLowerThird({ out })` in the first scene; `nsEndCard(DURATION - 0.3)` at the end of the last scene; `END_CARD = 5.5` s after the voice; `TOTAL = DURATION + END_CARD`.
-- Stop drawing captions once the card is opaque (`if (TT < DURATION + 0.3)`): text under it still counts as overlapping.
+- `nssLowerThird({ out })` (netsurit-soft) or `nsLowerThird({ out })` (infographic) in the first scene; `nssEndCard(DURATION - 0.3)` / `nsEndCard(...)` at the end of the last scene; `END_CARD = 5.5` s after the voice; `TOTAL = DURATION + END_CARD`.
+- Captions must stop once the card is opaque: text under it still counts as overlapping. `nssEndCard` does this for `nssCaption` (`NSS_COVER`); with the infographic look, wrap them yourself (`if (TT < DURATION + 0.3)`).
 - With a music track, pad it with 5.5 s of silence for the card (`ffmpeg -i track.wav -af apad=pad_dur=5.5 track-endcard.wav`).
 
 ## WhatsApp (9:16) specifics
@@ -78,3 +89,7 @@ What worked on **The Enterprise Brain** (2:57, 8 chapters, 30 voice lines, 7 sha
 - `brand.js` patches kit functions at load time: anything that needs `ctx` must look it up when called, not when the file loads.
 - In the score, don't name a global `L` (the engine's score code declares its own); the starter's layout object is `LAY`.
 - Look at `review/phone.jpg` at actual size: if a label is hard to read there, it is too small.
+- A long tagline on one line ran off the 16:9 end card ("What you know, checked today."): `nsEndCardNow` now shrinks it to fit; keep taglines to 2–5 words anyway.
+- Eleven Music takes put accents on bar starts as loud as a composed hit, so the loudest 100 ms landed on a random downbeat: compress the take before the section gains (`music.md` step 6).
+- The loudest moment can land on a quiet-looking sound effect late in the piece (a soft chime in the close beat the hit): keep every `'s'` sound after the payoff well under the hit.
+- `IG.cream` is `igPerson`'s skin as well as the kit's disc: `brand.js` keeps it skin (it used to be red, which gave people red faces); use `IG.core` for red discs.

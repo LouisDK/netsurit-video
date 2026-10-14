@@ -2,14 +2,19 @@
 
 **A Claude Code plugin by [Louis de Klerk](https://github.com/LouisDK) (Netsurit Innovate)** for making Netsurit-branded animated explainer videos by talking to Claude.
 
+![The starter in netsurit-soft, WhatsApp version (9:16)](docs/preview-soft-9x16.png)
+![The starter in netsurit-soft, 16:9 version](docs/preview-soft-16x9.png)
+
+These stills are from the starter every new piece begins with, in **netsurit-soft**, the default look since 1.1.0.
+
+The technique was distilled from *The Enterprise Brain* (October 2026), made in the earlier flat infographic look, which is still available (ask for "the infographic look", or `--style infographic`). Its full source ships with the plugin as a worked example:
+
 ![The Enterprise Brain, WhatsApp version (9:16)](docs/preview-9x16.png)
 ![The Enterprise Brain, 16:9 version](docs/preview-16x9.png)
 
-These stills are from *The Enterprise Brain* (October 2026), the piece this plugin was distilled from. Its full source ships with the plugin as a worked example.
-
 What you get:
 
-- **The look:** flat infographic illustration in the Netsurit corporate identity (CI): charcoal and Netsurit Red, Oxygen type, the N lockup on a black end card, and a byline that credits you.
+- **The look:** netsurit-soft, soft geometric illustration in the Netsurit corporate identity (CI): friendly people and rounded shapes on white, one Netsurit Red hero per frame with the N's 45° cut, gentle spring pop-ins and diagonal wipes, Oxygen type, the N lockup on a black end card, and a byline that credits you.
 - **The voice:** a professional narrator from ElevenLabs. Every on-screen action lands on the word that names it.
 - **The music:** composed in code for free, or an optional Eleven Music track.
 - **Two shapes from one piece:** 9:16 for WhatsApp (the main send) and 16:9 for decks, LinkedIn and email.
@@ -187,9 +192,10 @@ plugins/netsurit-video/
     SKILL.md           the flow: intake → story → look → storyboard → build → review → deliver
     netsurit/          brand.js (the CI in code), the CI guide, logos, Oxygen, the playbook, voice/music/WhatsApp guides
     scripts/           check, install-fonts, new-piece, tts (ElevenLabs), music (Eleven Music), whatsapp (encode)
-    starter/           the template every new piece starts from (both shapes, voice-led)
+    starter/           the template every new piece starts from (netsurit-soft, both shapes, voice-led)
+    starter-infographic/  the same for the infographic look (--style infographic)
     examples/          the full source of The Enterprise Brain, 9:16 and 16:9 (no audio)
-    engine/            Animate 0.4 (MIT), the renderer and review tools, with the infographic style
+    engine/            Animate 0.4 (MIT), the renderer and review tools, with the netsurit-soft and infographic styles
 ```
 
 ## Contributing

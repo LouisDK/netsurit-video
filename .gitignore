@@ -8,3 +8,5 @@ node_modules/
 __pycache__/
 # secrets
 .env
+# local working projects
+projects/

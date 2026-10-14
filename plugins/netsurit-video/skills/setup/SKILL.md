@@ -46,10 +46,10 @@ In the user's project folder (or a scratch folder):
 ```bash
 node "$V/scripts/new-piece.mjs" hello-netsurit --title "Hello, Netsurit" --name "<their name>" --tagline "Break free from|ordinary IT."
 node "$V/engine/tools/build.mjs" pieces/hello-netsurit
-node "$V/engine/tools/still.mjs" pieces/hello-netsurit 3,10,18,24 hello.png --scale 0.4
+node "$V/engine/tools/still.mjs" pieces/hello-netsurit 3,8,13,17.5,22 hello.png --scale 0.4
 node "$V/engine/tools/export.mjs" pieces/hello-netsurit --share
 node "$V/engine/tools/review.mjs" pieces/hello-netsurit
 ```
-Show `hello.png`: the byline with the red N bottom left, Oxygen type, a charcoal head with a red core, the black end card. The review should pass every check (about 2 minutes in all). If the type looks like Arial, the font isn't installed for the browser: rerun `install-fonts.mjs`, then `check.mjs`.
+Show `hello.png`: the byline with the red N bottom left, Oxygen type, a team at a table, a person at a red laptop, the services sheet with a red flag row, the red arrow, the black end card. The review should pass every check (about 2 minutes in all). If the type looks like Arial, the font isn't installed for the browser: rerun `install-fonts.mjs`, then `check.mjs`.
 
 Then tell them they're ready: "Ask me to make a Netsurit video about …" (the `video` skill takes it from there). They can delete `pieces/hello-netsurit`.

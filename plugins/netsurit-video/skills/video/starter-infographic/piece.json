@@ -1,0 +1,10 @@
+{
+  "name": "__NAME__",
+  "title": "__TITLE__",
+  "format": { "width": 1080, "height": 1920, "fps": 30, "bpm": 120 },
+  "formats": ["__FORMAT__"],
+  "storyFormat": "morph chain, voice-led (Netsurit explainer)",
+  "style": "infographic",
+  "scenes": ["src/brand.js", "src/helpers.js", "src/scenes.js"],
+  "review": { "safe": { "top": 180, "bottom": 220, "right": 60 }, "refs": {} }
+}
